@@ -3,6 +3,8 @@ import { useState, useEffect } from "react";
 import Alert from "./Alert";
 import Card from "./Card";
 
+const BASE_API = "https://deckofcardsapi.com/api";
+
 const CardDeck = () => {
   const [deck, setDeck] = useState({});
   const [cards, setCards] = useState([]);
@@ -11,7 +13,7 @@ const CardDeck = () => {
 
   useEffect(() => {
     const getBrandNewDeck = async () => {
-      const resp = await axios.get("https://deckofcardsapi.com/api/deck/new/");
+      const resp = await axios.get(`${BASE_API}/deck/new/`);
       setDeck(resp.data);
     };
 
@@ -20,9 +22,7 @@ const CardDeck = () => {
 
   const drawCard = async () => {
     if (remaining !== 0) {
-      const resp = await axios.get(
-        `https://deckofcardsapi.com/api/deck/${deck.deck_id}/draw/`
-      );
+      const resp = await axios.get(`${BASE_API}/deck/${deck.deck_id}/draw/`);
 
       setCards((cards) => [
         ...cards,
@@ -39,11 +39,24 @@ const CardDeck = () => {
     }
   };
 
+  const shuffleDeck = async () => {
+    const resp = await axios.get(`${BASE_API}/deck/${deck.deck_id}/shuffle/`);
+    setDeck(resp.data);
+    setCards([]);
+    setShowAlert(false);
+  };
+
   return (
     <div className="CardDeck">
-      <button type="button" onClick={drawCard}>
-        Gimme A Card!
-      </button>
+      <div className="CardDeck-action-btns">
+        <button type="button" onClick={drawCard}>
+          Gimme A Card!
+        </button>
+
+        <button type="button" onClick={shuffleDeck}>
+          Shuffle Deck
+        </button>
+      </div>
 
       {showAlert && <Alert type="Error" message="Error: no cards remaining!" />}
 
